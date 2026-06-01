@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Expression de besoin</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0e14;--surface:#13161f;--surface2:#191d2a;--surface3:#1f2435;
+  --border:#252a3a;--border2:#2e354d;
+  --accent:#4f8ef7;--accent-glow:rgba(79,142,247,.15);
+  --purple:#7c5cfc;--purple-glow:rgba(124,92,252,.15);
+  --success:#2dd4a0;--success-glow:rgba(45,212,160,.12);
+  --warn:#f5a623;--text:#e8eaf0;--text2:#a8adc0;--muted:#5a6080;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.3;pointer-events:none;z-index:0}
+.app{max-width:960px;margin:0 auto;padding:32px 20px;position:relative;z-index:1}
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo h1{font-size:20px;font-weight:600}
+.logo h1 span{color:var(--accent)}
+.logo p{color:var(--muted);font-size:12px;margin-top:2px}
+.vbadge{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.steps{display:flex;align-items:center;margin-bottom:28px}
+.step{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--muted);transition:color .3s}
+.step.active{color:var(--accent)}.step.done{color:var(--success)}
+.step-dot{width:26px;height:26px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.step.active .step-dot{background:var(--accent-glow)}.step.done .step-dot{background:var(--success-glow)}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 10px;min-width:20px;max-width:60px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:14px}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.ctitle{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1.2px}
+.cbadge{margin-left:auto;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:10px;font-family:'DM Mono',monospace;color:var(--muted)}
+.upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:36px 24px;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:var(--surface2)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:var(--accent-glow)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone h3{font-size:15px;font-weight:500;margin-bottom:6px}
+.upload-zone p{color:var(--muted);font-size:12px}
+.upload-zone strong{color:var(--accent);font-weight:500}
+.file-banner{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;margin-top:12px;border:1px solid}
+.file-banner.adta{background:rgba(79,142,247,.07);border-color:rgba(79,142,247,.2)}
+.file-banner.pullmode{background:rgba(124,92,252,.07);border-color:rgba(124,92,252,.2)}
+.file-banner.unknown{background:rgba(245,166,35,.07);border-color:rgba(245,166,35,.2)}
+.type-pill{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0}
+.pill-adta{background:rgba(79,142,247,.2);color:#7ab3ff}
+.pill-pullmode{background:rgba(124,92,252,.2);color:#b79dff}
+.pill-unknown{background:rgba(245,166,35,.2);color:#f5c842}
+.finfo strong{display:block;font-size:13px;font-weight:500}
+.finfo span{font-size:11px;color:var(--muted)}
+.manual-type{margin-top:12px}
+.manual-type p{font-size:12px;color:var(--warn);margin-bottom:8px}
+.type-btns{display:flex;gap:8px}
+.type-btn{flex:1;padding:11px;border-radius:9px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.type-btn.sel-adta{border-color:var(--accent);background:rgba(79,142,247,.1);color:#7ab3ff}
+.type-btn.sel-pullmode{border-color:var(--purple);background:var(--purple-glow);color:#b79dff}
+.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tpl-card{border:1.5px solid var(--border2);border-radius:11px;padding:16px 14px;cursor:pointer;transition:all .2s;text-align:center;position:relative;background:var(--surface2)}
+.tpl-card:not(.disabled):hover{border-color:var(--accent);background:var(--accent-glow);transform:translateY(-2px)}
+.tpl-card.selected{border-color:var(--success);background:var(--success-glow)}
+.tpl-card.disabled{opacity:.3;cursor:not-allowed}
+.tpl-icon{font-size:24px;margin-bottom:8px;display:block}
+.tpl-name{font-size:13px;font-weight:600}
+.tpl-check{position:absolute;top:10px;right:10px;color:var(--success);font-size:13px;font-weight:700}
+.mbox{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:18px}
+.mtitle{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.mgrid{display:grid;gap:6px}
+.mcol{background:var(--surface3);border:1px solid var(--border2);border-radius:7px;padding:8px 6px;text-align:center}
+.mc-label{font-size:9px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.mc-name{font-size:10px;color:var(--text2);font-weight:500;margin-bottom:4px;line-height:1.3}
+.mc-src{font-size:10px;font-family:'DM Mono',monospace;color:var(--accent);background:rgba(79,142,247,.1);border-radius:4px;padding:1px 5px;display:inline-block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:block;font-size:11px;color:var(--text2);margin-bottom:7px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;color:var(--text);padding:10px 36px 10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6080'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer}
+select:focus{border-color:var(--accent)}
+select option{background:#191d2a}
+.listbox{background:var(--surface2);border:1px solid var(--border2);border-radius:9px;max-height:160px;overflow-y:auto;padding:5px}
+.listbox::-webkit-scrollbar{width:5px}
+.listbox::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.litem{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;cursor:pointer;transition:background .15s;font-size:13px;user-select:none}
+.litem:hover{background:rgba(79,142,247,.08)}
+.litem.on{background:rgba(79,142,247,.1)}
+.litem input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.hint{font-size:11px;color:var(--muted);margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(79,142,247,.25)}
+.btn-primary:hover{background:#3a7ae8;transform:translateY(-1px)}
+.btn-primary:disabled{background:var(--surface3);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+.btn-success{background:var(--success);color:#0a0d13;font-weight:600}
+.btn-success:hover{background:#25c090;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.actions{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.results-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+.count-badge{background:rgba(45,212,160,.1);color:var(--success);border:1px solid rgba(45,212,160,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;font-family:'DM Mono',monospace}
+.tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tag{display:inline-flex;align-items:center;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:5px;padding:3px 9px;font-size:11px;font-family:'DM Mono',monospace}
+.tag.ta{background:rgba(79,142,247,.08);border-color:rgba(79,142,247,.2);color:#7ab3ff}
+.tag.tp{background:var(--purple-glow);border-color:rgba(124,92,252,.2);color:#b79dff}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--surface2);color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px;padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;font-size:10px}
+tbody tr{border-bottom:1px solid rgba(37,42,58,.8)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(79,142,247,.03)}
+tbody td{padding:10px 14px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+td.num{color:var(--muted);font-size:10px}
+.empty-state{text-align:center;padding:48px;color:var(--muted)}
+.more-row td{text-align:center;color:var(--muted);padding:12px;font-size:11px;font-style:italic;background:var(--surface2)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🏛</div>
+    <div>
+      <h1>Template <span>Expression de besoin</span></h1>
+      <p>Générateur de liste depuis ADTA &amp; PULLMODE</p>
+    </div>
+  </div>
+  <span class="vbadge">v3.0</span>
+</div>
+
+<div class="steps">
+  <div class="step active" id="s1"><div class="step-dot">1</div><span>Fichier</span></div>
+  <div class="step-line"></div>
+  <div class="step" id="s2"><div class="step-dot">2</div><span>Template</span></div>
+  <div class="step-line"></div>
+  <div class="step" id="s3"><div class="step-dot">3</div><span>Filtres</span></div>
+  <div class="step-line"></div>
+  <div class="step" id="s4"><div class="step-dot">4</div><span>Résultat</span></div>
+</div>
+
+<!-- STEP 1 -->
+<div class="card" id="cardUpload">
+  <div class="card-header"><div class="cdot"></div><span class="ctitle">Fichier source</span></div>
+  <div class="upload-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls">
+    <div style="font-size:32px;margin-bottom:10px">📂</div>
+    <h3>Glisse ton fichier ici</h3>
+    <p>ou <strong>clique pour parcourir</strong></p>
+    <p style="margin-top:6px">ADTA 2026… ou PULLMODE… · .xlsx .xlsm .xls</p>
+  </div>
+  <div id="fileBanner" style="display:none"></div>
+  <div id="manualType" style="display:none">
+    <div class="manual-type">
+      <p>⚠ Type non détecté — choisis manuellement :</p>
+      <div class="type-btns">
+        <button class="type-btn" id="btnAdta" onclick="setType('ADTA')">📋 ADTA</button>
+        <button class="type-btn" id="btnPullmode" onclick="setType('PULLMODE')">🔄 PULLMODE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="card" id="cardTemplate" style="display:none">
+  <div class="card-header"><div class="cdot" style="background:var(--purple)"></div><span class="ctitle">Template de sortie</span></div>
+  <div class="tpl-grid">
+    <div class="tpl-card selected" id="tpl-citadel" onclick="selectTpl('citadel')">
+      <span class="tpl-icon">🏛</span>
+      <div class="tpl-name">CITADEL</div>
+      <span class="tpl-check" id="chk-citadel">✓</span>
+    </div>
+    <div class="tpl-card" id="tpl-easybuy" onclick="selectTpl('easybuy')">
+      <span class="tpl-icon">🛒</span>
+      <div class="tpl-name">Easybuy</div>
+      <span class="tpl-check" id="chk-easybuy" style="display:none">✓</span>
+    </div>
+    <div class="tpl-card" id="tpl-sap" onclick="selectTpl('sap')">
+      <span class="tpl-icon">⚙️</span>
+      <div class="tpl-name">SAP</div>
+      <span class="tpl-check" id="chk-sap" style="display:none">✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="card" id="cardFiltres" style="display:none">
+  <div class="card-header">
+    <div class="cdot" style="background:var(--success)"></div>
+    <span class="ctitle" id="filtreTitle">Filtres CITADEL</span>
+    <span class="cbadge" id="typeLabel">—</span>
+  </div>
+
+  <!-- Mapping CITADEL -->
+  <div class="mbox" id="mapCitadel">
+    <div class="mtitle">Correspondance — CITADEL</div>
+    <div class="mgrid" style="grid-template-columns:repeat(5,1fr)">
+      <div class="mcol"><div class="mc-label">Col A</div><div class="mc-name">Référence</div><span class="mc-src">A/O/H</span></div>
+      <div class="mcol"><div class="mc-label">Col B</div><div class="mc-name">Demandeur SAP</div><span class="mc-src">col. B</span></div>
+      <div class="mcol"><div class="mc-label">Col C</div><div class="mc-name">Fournisseur</div><span class="mc-src">col. J</span></div>
+      <div class="mcol"><div class="mc-label">Col D</div><div class="mc-name">Qté installée</div><span class="mc-src">col. T</span></div>
+      <div class="mcol"><div class="mc-label">Col E</div><div class="mc-name">N° affaire</div><span class="mc-src">col. Z</span></div>
+    </div>
+  </div>
+
+  <!-- Mapping EASYBUY -->
+  <div class="mbox" id="mapEasybuy" style="display:none">
+    <div class="mtitle">Correspondance — EASYBUY</div>
+    <div class="mgrid" style="grid-template-columns:repeat(7,1fr)">
+      <div class="mcol"><div class="mc-label">Col B</div><div class="mc-name">Code Article</div><span class="mc-src">A/O/H</span></div>
+      <div class="mcol"><div class="mc-label">Col D</div><div class="mc-name">Quantité</div><span class="mc-src">col. T</span></div>
+      <div class="mcol"><div class="mc-label">Col J</div><div class="mc-name">Fournisseur</div><span class="mc-src">col. K</span></div>
+      <div class="mcol"><div class="mc-label">Col L</div><div class="mc-name">Demandeur Tech.</div><span class="mc-src">col. B</span></div>
+      <div class="mcol"><div class="mc-label">Col N</div><div class="mc-name">N° affaire</div><span class="mc-src">col. Z</span></div>
+      <div class="mcol"><div class="mc-label">Col P</div><div class="mc-name">Date livraison</div><span class="mc-src">#N/A</span></div>
+      <div class="mcol"><div class="mc-label">Col U</div><div class="mc-name">ID adresse</div><span class="mc-src">#N/A</span></div>
+    </div>
+  </div>
+
+  <!-- Mapping SAP -->
+  <div class="mbox" id="mapSap" style="display:none">
+    <div class="mtitle">Correspondance — SAP</div>
+    <div class="mgrid" style="grid-template-columns:repeat(5,1fr)">
+      <div class="mcol"><div class="mc-label">Col A</div><div class="mc-name">Article</div><span class="mc-src">vide</span></div>
+      <div class="mcol"><div class="mc-label">Col B</div><div class="mc-name">Désignation</div><span class="mc-src">col. I</span></div>
+      <div class="mcol"><div class="mc-label">Col C</div><div class="mc-name">Famille achat</div><span class="mc-src">col. E</span></div>
+      <div class="mcol"><div class="mc-label">Col D</div><div class="mc-name">Quantité</div><span class="mc-src">col. T</span></div>
+      <div class="mcol"><div class="mc-label">Col I</div><div class="mc-name">Fournisseur</div><span class="mc-src">col. K</span></div>
+      <div class="mcol"><div class="mc-label">Col J</div><div class="mc-name">N° art. fourn.</div><span class="mc-src">A(R) / O(E)</span></div>
+      <div class="mcol"><div class="mc-label">Col K</div><div class="mc-name">Demandeur</div><span class="mc-src">col. B</span></div>
+      <div class="mcol"><div class="mc-label">Col N</div><div class="mc-name">Affaire</div><span class="mc-src">col. Z</span></div>
+      <div class="mcol"><div class="mc-label">Col Q</div><div class="mc-name">Date livraison</div><span class="mc-src">#N/A</span></div>
+      <div class="mcol"><div class="mc-label">Autres</div><div class="mc-name">Autres cols</div><span class="mc-src">vides</span></div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:14px">
+    <div>
+      <label>Feuille source</label>
+      <select id="selFeuille"><option value="">— Choisir —</option></select>
+    </div>
+    <div>
+      <label>Type d'import</label>
+      <select id="selType">
+        <option value="R">R — Référence (Article) — col. A</option>
+        <option value="E">E — Référence Easybuy — col. O</option>
+        <option value="X">X — Référence SAP — col. H</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid2">
+    <div>
+      <label>Zone <small style="font-weight:400;text-transform:none">(colonne C)</small></label>
+      <select id="selZone"><option value="">(Toutes les zones)</option></select>
+    </div>
+    <div>
+      <label>Fournisseurs <small style="font-weight:400;text-transform:none">(colonne J)</small></label>
+      <div class="listbox" id="listFourn"></div>
+      <div class="hint">Coche plusieurs fournisseurs si besoin</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" id="btnGenerer" disabled>⚡ Générer</button>
+    <button class="btn btn-ghost" id="btnReset">↺ Nouveau fichier</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="card" id="cardResult" style="display:none">
+  <div class="results-top">
+    <div class="card-header" style="margin-bottom:0">
+      <div class="cdot" style="background:var(--success)"></div>
+      <span class="ctitle" id="resultTitle">Résultat</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="count-badge" id="countBadge">0 lignes</span>
+      <button class="btn btn-success" id="btnExport">⬇ Télécharger Excel</button>
+      <button class="btn btn-ghost" id="btnNewFilter">↺ Changer filtres</button>
+    </div>
+  </div>
+  <div class="tags-row" id="tagsRow"></div>
+  <div class="table-wrap">
+    <table>
+      <thead id="resultThead"></thead>
+      <tbody id="tableBody"><tr><td colspan="8" class="empty-state">Aucune donnée</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+<script>
+var wb = null;
+var fileType = null;
+var selectedTpl = 'citadel';
+var resultData = [];
+
+// ── STEPS ──────────────────────────────────────────────────────
+function setStep(n) {
+  for (var i = 1; i <= 4; i++) {
+    var el = document.getElementById('s' + i);
+    el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+  }
+}
+
+// ── UPLOAD ──────────────────────────────────────────────────────
+var dropZone  = document.getElementById('dropZone');
+var fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag'); });
+dropZone.addEventListener('drop', function(e) {
+  e.preventDefault(); dropZone.classList.remove('drag');
+  if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', function(e) {
+  if (e.target.files[0]) processFile(e.target.files[0]);
+});
+
+function processFile(file) {
+  var upper = file.name.toUpperCase();
+  fileType = upper.indexOf('ADTA') >= 0 ? 'ADTA' : upper.indexOf('PULLMODE') >= 0 ? 'PULLMODE' : null;
+  renderBanner(file.name);
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      wb = XLSX.read(e.target.result, { type: 'array' });
+      populateFeuilles();
+      document.getElementById('cardTemplate').style.display = 'block';
+      document.getElementById('cardFiltres').style.display  = 'block';
+      setStep(2);
+    } catch(err) { alert('Erreur lecture fichier : ' + err.message); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderBanner(name) {
+  var banner = document.getElementById('fileBanner');
+  var manual = document.getElementById('manualType');
+  if (fileType) {
+    var cls  = fileType === 'ADTA' ? 'adta' : 'pullmode';
+    var pill = fileType === 'ADTA' ? 'pill-adta' : 'pill-pullmode';
+    banner.innerHTML = '<div class="file-banner ' + cls + '"><span class="type-pill ' + pill + '">' + fileType + '</span><div class="finfo"><strong>📄 ' + name + '</strong><span>Type détecté automatiquement ✓</span></div></div>';
+    manual.style.display = 'none';
+  } else {
+    banner.innerHTML = '<div class="file-banner unknown"><span class="type-pill pill-unknown">?</span><div class="finfo"><strong>📄 ' + name + '</strong><span>Type non détecté</span></div></div>';
+    manual.style.display = 'block';
+  }
+  banner.style.display = 'block';
+  document.getElementById('typeLabel').textContent = fileType || '?';
+}
+
+function setType(t) {
+  fileType = t;
+  document.getElementById('btnAdta').className    = 'type-btn' + (t === 'ADTA'    ? ' sel-adta'    : '');
+  document.getElementById('btnPullmode').className = 'type-btn' + (t === 'PULLMODE' ? ' sel-pullmode' : '');
+  document.getElementById('typeLabel').textContent = t;
+}
+
+// ── TEMPLATE ────────────────────────────────────────────────────
+function selectTpl(t) {
+  selectedTpl = t;
+  var ids = ['citadel', 'easybuy', 'sap'];
+  for (var i = 0; i < ids.length; i++) {
+    var card = document.getElementById('tpl-' + ids[i]);
+    var chk  = document.getElementById('chk-' + ids[i]);
+    var map  = document.getElementById('map'  + ids[i].charAt(0).toUpperCase() + ids[i].slice(1));
+    if (card) card.className = 'tpl-card' + (ids[i] === t ? ' selected' : '');
+    if (chk)  chk.style.display  = ids[i] === t ? 'block' : 'none';
+    if (map)  map.style.display  = ids[i] === t ? 'block' : 'none';
+  }
+  var titles = { citadel: 'Filtres CITADEL', easybuy: 'Filtres EASYBUY', sap: 'Filtres SAP' };
+  document.getElementById('filtreTitle').textContent = titles[t] || 'Filtres';
+
+  // Adapter les options Type d'import selon le template
+  var selType = document.getElementById('selType');
+  selType.innerHTML = '';
+  if (t === 'sap') {
+    selType.innerHTML =
+      '<option value="R">R — Référence (Article) — col. A</option>' +
+      '<option value="E">E — Référence Easybuy — col. O</option>';
+  } else {
+    selType.innerHTML =
+      '<option value="R">R — Référence (Article) — col. A</option>' +
+      '<option value="E">E — Référence Easybuy — col. O</option>' +
+      '<option value="X">X — Référence SAP — col. H</option>';
+  }
+}
+
+// ── FEUILLES ─────────────────────────────────────────────────────
+function populateFeuilles() {
+  var sel = document.getElementById('selFeuille');
+  sel.innerHTML = '<option value="">— Choisir une feuille —</option>';
+  for (var i = 0; i < wb.SheetNames.length; i++) {
+    var o = document.createElement('option');
+    o.value = o.textContent = wb.SheetNames[i];
+    sel.appendChild(o);
+  }
+}
+
+document.getElementById('selFeuille').addEventListener('change', function() {
+  if (!this.value) { document.getElementById('btnGenerer').disabled = true; return; }
+  loadFilters(this.value);
+  document.getElementById('btnGenerer').disabled = false;
+  setStep(3);
+});
+
+function loadFilters(sheet) {
+  var data = XLSX.utils.sheet_to_json(wb.Sheets[sheet], { header: 1, defval: '' });
+  var zones = {}, fourns = {};
+  for (var i = 1; i < data.length; i++) {
+    var r = data[i];
+    var z = String(r[2]  || '').trim();
+    var f = String(r[9]  || '').trim();
+    if (z) zones[z]  = 1;
+    if (f) fourns[f] = 1;
+  }
+  var selZ = document.getElementById('selZone');
+  selZ.innerHTML = '<option value="">(Toutes les zones)</option>';
+  var zArr = Object.keys(zones).sort();
+  for (var i = 0; i < zArr.length; i++) {
+    var o = document.createElement('option'); o.value = o.textContent = zArr[i]; selZ.appendChild(o);
+  }
+  var lb = document.getElementById('listFourn');
+  lb.innerHTML = '';
+  lb.appendChild(mkItem('TOUS', '✦ Tous les fournisseurs', true));
+  var fArr = Object.keys(fourns).sort();
+  for (var i = 0; i < fArr.length; i++) lb.appendChild(mkItem(fArr[i], fArr[i], false));
+
+  lb.querySelector('input').addEventListener('change', function() {
+    if (this.checked) {
+      var others = lb.querySelectorAll('input:not(:first-of-type)');
+      for (var i = 0; i < others.length; i++) others[i].checked = false;
+    }
+  });
+  var otherCbs = lb.querySelectorAll('input:not(:first-of-type)');
+  for (var i = 0; i < otherCbs.length; i++) {
+    otherCbs[i].addEventListener('change', function() {
+      if (this.checked) lb.querySelector('input:first-of-type').checked = false;
+    });
+  }
+}
+
+function mkItem(val, label, checked) {
+  var div = document.createElement('div');
+  div.className = 'litem' + (checked ? ' on' : '');
+  var cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = val; cb.checked = checked;
+  var sp = document.createElement('span'); sp.textContent = label;
+  div.appendChild(cb); div.appendChild(sp);
+  div.addEventListener('click', function(e) {
+    if (e.target !== cb) { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
+    div.className = 'litem' + (cb.checked ? ' on' : '');
+  });
+  cb.addEventListener('change', function() { div.className = 'litem' + (cb.checked ? ' on' : ''); });
+  return div;
+}
+
+// ── FILTRES COMMUNS ──────────────────────────────────────────────
+function getFilters() {
+  var sheet = document.getElementById('selFeuille').value;
+  var zone  = document.getElementById('selZone').value.toUpperCase().trim();
+  var type  = document.getElementById('selType').value;
+  var cbs   = document.getElementById('listFourn').querySelectorAll('input:checked');
+  var checks = [];
+  for (var i = 0; i < cbs.length; i++) checks.push(cbs[i].value.toUpperCase());
+  var tousLesFourn = checks.indexOf('TOUS') >= 0 || checks.length === 0;
+  return { sheet: sheet, zone: zone, type: type, checks: checks, tousLesFourn: tousLesFourn };
+}
+
+function getRef(r, type) {
+  var ref = '';
+  if      (type === 'R') ref = String(r[0]  || '').trim();
+  else if (type === 'E') ref = String(r[14] || '').trim();
+  else if (type === 'X') ref = String(r[7]  || '').trim();
+  if (!ref || ref.toUpperCase() === 'N/A' || ref.toUpperCase() === 'NA' || ref === '-') return null;
+  return ref;
+}
+
+function passeFiltres(r, f) {
+  var colB = String(r[1] || '').trim().toUpperCase();
+  var colC = String(r[2] || '').trim().toUpperCase();
+  var colJ = String(r[9] || '').trim().toUpperCase();
+  if (f.zone && colC.indexOf(f.zone) < 0) return false;
+  if (colB === 'X') return false;
+  if (!f.tousLesFourn) {
+    var match = false;
+    for (var k = 0; k < f.checks.length; k++) { if (colJ.indexOf(f.checks[k]) >= 0) { match = true; break; } }
+    if (!match) return false;
+  }
+  return true;
+}
+
+// ── GENERER ──────────────────────────────────────────────────────
+document.getElementById('btnGenerer').addEventListener('click', function() {
+  var f = getFilters();
+  if (!f.sheet) return;
+  var data = XLSX.utils.sheet_to_json(wb.Sheets[f.sheet], { header: 1, defval: '' });
+  resultData = [];
+
+  for (var i = 1; i < data.length; i++) {
+    var r = data[i];
+    if (!passeFiltres(r, f)) continue;
+    var ref = getRef(r, f.type);
+    if (!ref) continue;
+
+    if (selectedTpl === 'citadel') {
+      resultData.push({
+        ref:         ref,
+        demandeur:   String(r[1]  || '').trim(),
+        fournisseur: String(r[9]  || '').trim(),
+        qte:         String(r[19] || '').trim(),
+        affaire:     String(r[25] || '').trim()
+      });
+    } else if (selectedTpl === 'easybuy') {
+      resultData.push({
+        code:        ref,
+        qte:         String(r[19] || '').trim(),
+        fournisseur: String(r[10] || '').trim(),
+        demandeur:   String(r[1]  || '').trim(),
+        affaire:     String(r[25] || '').trim()
+      });
+    } else if (selectedTpl === 'sap') {
+      // Col J SAP : col A si R, col O si E
+      var artFournVal = f.type === 'E' ? String(r[14] || '').trim() : String(r[0] || '').trim();
+      resultData.push({
+        article:     '',                               // col A vide
+        designation: String(r[8]  || '').trim(),      // col I -> B SAP
+        famille:     String(r[4]  || '').trim(),      // col E -> C SAP
+        qte:         String(r[19] || '').trim(),      // col T -> D SAP
+        fournisseur: String(r[10] || '').trim(),      // col K -> I SAP
+        artFourn:    artFournVal,                     // col A(R) ou O(E) -> J SAP
+        demandeur:   String(r[1]  || '').trim(),      // col B -> K SAP
+        affaire:     String(r[25] || '').trim()       // col Z -> N SAP
+      });
+    }
+  }
+
+  renderResult(f);
+});
+
+// ── AFFICHAGE RÉSULTAT ───────────────────────────────────────────
+function renderResult(f) {
+  var ftCls = fileType === 'ADTA' ? 'ta' : fileType === 'PULLMODE' ? 'tp' : '';
+  document.getElementById('tagsRow').innerHTML =
+    '<span class="tag ' + ftCls + '">' + (fileType || '?') + '</span>' +
+    '<span class="tag">' + selectedTpl.toUpperCase() + '</span>' +
+    '<span class="tag">📋 ' + f.sheet + '</span>' +
+    '<span class="tag">Type: ' + f.type + '</span>' +
+    '<span class="tag">Zone: ' + (f.zone || 'Toutes') + '</span>' +
+    '<span class="tag">Fourn: ' + (f.tousLesFourn ? 'Tous' : f.checks.join(' + ')) + '</span>';
+
+  document.getElementById('countBadge').textContent = resultData.length + ' ligne' + (resultData.length > 1 ? 's' : '');
+
+  var titles = { citadel: 'Liste CITADEL', easybuy: 'Liste EASYBUY', sap: 'Liste SAP' };
+  document.getElementById('resultTitle').textContent = titles[selectedTpl] || 'Résultat';
+
+  var thead = document.getElementById('resultThead');
+  if (selectedTpl === 'citadel') {
+    thead.innerHTML = '<tr><th>#</th><th>A — Référence</th><th>B — Demandeur SAP</th><th>C — Fournisseur</th><th>D — Qté installée</th><th>E — N° affaire</th></tr>';
+  } else if (selectedTpl === 'easybuy') {
+    thead.innerHTML = '<tr><th>#</th><th>B — Code Article</th><th>D — Quantité</th><th>J — Fournisseur</th><th>L — Demandeur Tech.</th><th>N — N° affaire</th><th>P — Date livraison</th></tr>';
+  } else if (selectedTpl === 'sap') {
+    thead.innerHTML = '<tr><th>#</th><th>A — Article</th><th>B — Désignation</th><th>C — Famille</th><th>D — Qté</th><th>I — Fournisseur</th><th>K — Demandeur</th><th>N — Affaire</th></tr>';
+  }
+
+  var tbody = document.getElementById('tableBody');
+  if (!resultData.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">🔍 Aucune ligne ne correspond aux filtres</td></tr>';
+    document.getElementById('cardResult').style.display = 'block';
+    setStep(4);
+    return;
+  }
+
+  var html = '';
+  var max = Math.min(resultData.length, 300);
+  for (var i = 0; i < max; i++) {
+    var r = resultData[i];
+    if (selectedTpl === 'citadel') {
+      html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(r.ref) + '</td><td>' + esc(r.demandeur) + '</td><td>' + esc(r.fournisseur) + '</td><td>' + esc(r.qte) + '</td><td>' + esc(r.affaire) + '</td></tr>';
+    } else if (selectedTpl === 'easybuy') {
+      html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(r.code) + '</td><td>' + esc(r.qte) + '</td><td>' + esc(r.fournisseur) + '</td><td>' + esc(r.demandeur) + '</td><td>' + esc(r.affaire) + '</td><td>#N/A</td></tr>';
+    } else if (selectedTpl === 'sap') {
+      html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(r.article) + '</td><td>' + esc(r.designation) + '</td><td>' + esc(r.famille) + '</td><td>' + esc(r.qte) + '</td><td>' + esc(r.fournisseur) + '</td><td>' + esc(r.demandeur) + '</td><td>' + esc(r.affaire) + '</td></tr>';
+    }
+  }
+  if (resultData.length > 300) html += '<tr class="more-row"><td colspan="8">… ' + (resultData.length - 300) + ' lignes supplémentaires dans le fichier téléchargé</td></tr>';
+  tbody.innerHTML = html;
+
+  document.getElementById('cardResult').style.display = 'block';
+  setStep(4);
+  setTimeout(function() { document.getElementById('cardResult').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ── EXPORT EXCEL ─────────────────────────────────────────────────
+document.getElementById('btnExport').addEventListener('click', function() {
+  if (!resultData.length) return;
+  var rows, sheetName, fileName;
+  var date = new Date().toISOString().slice(0, 10);
+
+  if (selectedTpl === 'citadel') {
+    rows = [['Référence (article)', 'Demandeur (SAP)', 'Fournisseur', 'Quantité installée', 'N° affaire']];
+    for (var i = 0; i < resultData.length; i++)
+      rows.push([resultData[i].ref, resultData[i].demandeur, resultData[i].fournisseur, resultData[i].qte, resultData[i].affaire]);
+    sheetName = 'Liste CITADEL';
+    fileName  = 'Liste_CITADEL_' + (fileType || '') + '_' + date + '.xlsx';
+
+  } else if (selectedTpl === 'easybuy') {
+    var hEB = ['Numéro de ligne','Code Article *','Libellé article','Quantité *','PU','Devise',
+      'Commentaire de ligne','Par','Fournisseur Tarif Fabricant Local','Fournisseur',
+      'Numéro de besoin','Demandeur Technique','Type d\'imputation','Numéro d\'affaire',
+      'Numéro d\'immo','Date de livraison','Date de début','Date de fin',
+      '% remise de la ligne','Type d\'adresse','ID adresse de livraison','Demandeur'];
+    rows = [hEB];
+    for (var i = 0; i < resultData.length; i++) {
+      var row = new Array(22).fill('');
+      row[1]  = resultData[i].code;
+      row[3]  = resultData[i].qte;
+      row[9]  = resultData[i].fournisseur;
+      row[11] = resultData[i].demandeur;
+      row[13] = resultData[i].affaire;
+      row[15] = '#N/A';
+      row[20] = '#N/A';
+      rows.push(row);
+    }
+    sheetName = 'Easybuy';
+    fileName  = 'Template_Easybuy_' + (fileType || '') + '_' + date + '.xlsx';
+
+  } else if (selectedTpl === 'sap') {
+    var hSAP = ['Article [material]','Désignation [itemDescription]','Famille d\'achat [purchasingFamily]',
+      'Quantité [quantity]','Unité de mesure [unitOfMesure]','Prix de valorisation [valuationPrice]',
+      'Base de prix [priceUnit]','Magasin [storageLocation]','Fournisseur souhaité [desiredVendor]',
+      'N° article fournisseur [SupplierMaterialNumber]','Demandeur [requisitioner]',
+      'Nº de besoin [trackingNumber]','Catégorie d\'imputation [accountAssignment]','Affaire [project]',
+      'Immobilisation [asset]','Ordre [order]','Date de livraison [deliveryDate]',
+      'Date de début [beginningDate]','Date de fin [endDate]','Texte poste [commentItemText]',
+      'Commentaire interne [commentInternalComment]'];
+    rows = [hSAP];
+    for (var i = 0; i < resultData.length; i++) {
+      var row = new Array(21).fill('');
+      row[0]  = resultData[i].article;
+      row[1]  = resultData[i].designation;
+      row[2]  = resultData[i].famille;
+      row[3]  = resultData[i].qte;
+      row[8]  = resultData[i].fournisseur;
+      row[9]  = resultData[i].artFourn;
+      row[10] = resultData[i].demandeur;
+      row[13] = resultData[i].affaire;
+      row[16] = '#N/A';
+      rows.push(row);
+    }
+    sheetName = 'SAP';
+    fileName  = 'Template_SAP_' + (fileType || '') + '_' + date + '.xlsx';
+  }
+
+  var ws  = XLSX.utils.aoa_to_sheet(rows);
+  var wb2 = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb2, ws, sheetName);
+  XLSX.writeFile(wb2, fileName);
+});
+
+// ── RESET ─────────────────────────────────────────────────────────
+document.getElementById('btnNewFilter').addEventListener('click', function() {
+  document.getElementById('cardResult').style.display = 'none';
+  setStep(3);
+  document.getElementById('cardFiltres').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.getElementById('btnReset').addEventListener('click', function() {
+  wb = null; fileType = null; resultData = [];
+  fileInput.value = '';
+  document.getElementById('fileBanner').style.display  = 'none';
+  document.getElementById('manualType').style.display  = 'none';
+  document.getElementById('cardTemplate').style.display = 'none';
+  document.getElementById('cardFiltres').style.display  = 'none';
+  document.getElementById('cardResult').style.display   = 'none';
+  document.getElementById('btnGenerer').disabled = true;
+  setStep(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
