@@ -259,6 +259,21 @@ td.num{color:var(--muted);font-size:10px}
       <div class="hint">Coche plusieurs fournisseurs si besoin</div>
     </div>
   </div>
+  <!-- Filtres PULLMODE uniquement -->
+  <div id="pullmodeFilters" style="display:none">
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <label>Demandeur SAP <small style="font-weight:400;text-transform:none">(colonne B) — PULLMODE</small></label>
+        <div class="listbox" id="listDemandeur"></div>
+        <div class="hint">Coche plusieurs demandeurs si besoin</div>
+      </div>
+      <div>
+        <label>Système <small style="font-weight:400;text-transform:none">(colonne D) — PULLMODE</small></label>
+        <select id="selSysteme"><option value="">(Tous les systèmes)</option></select>
+      </div>
+    </div>
+  </div>
+
   <div class="actions">
     <button class="btn btn-primary" id="btnGenerer" disabled>⚡ Générer</button>
     <button class="btn btn-ghost" id="btnReset">↺ Nouveau fichier</button>
@@ -406,26 +421,33 @@ document.getElementById('selFeuille').addEventListener('change', function() {
 
 function loadFilters(sheet) {
   var data = XLSX.utils.sheet_to_json(wb.Sheets[sheet], { header: 1, defval: '' });
-  var zones = {}, fourns = {};
+  var zones = {}, fourns = {}, demandeurs = {}, systemes = {};
   for (var i = 1; i < data.length; i++) {
     var r = data[i];
     var z = String(r[2]  || '').trim();
     var f = String(r[9]  || '').trim();
-    if (z) zones[z]  = 1;
-    if (f) fourns[f] = 1;
+    var d = String(r[1]  || '').trim();
+    var s = String(r[3]  || '').trim();
+    if (z) zones[z]     = 1;
+    if (f) fourns[f]    = 1;
+    if (d) demandeurs[d]= 1;
+    if (s) systemes[s]  = 1;
   }
+
+  // Zones
   var selZ = document.getElementById('selZone');
   selZ.innerHTML = '<option value="">(Toutes les zones)</option>';
   var zArr = Object.keys(zones).sort();
   for (var i = 0; i < zArr.length; i++) {
     var o = document.createElement('option'); o.value = o.textContent = zArr[i]; selZ.appendChild(o);
   }
+
+  // Fournisseurs
   var lb = document.getElementById('listFourn');
   lb.innerHTML = '';
   lb.appendChild(mkItem('TOUS', '✦ Tous les fournisseurs', true));
   var fArr = Object.keys(fourns).sort();
   for (var i = 0; i < fArr.length; i++) lb.appendChild(mkItem(fArr[i], fArr[i], false));
-
   lb.querySelector('input').addEventListener('change', function() {
     if (this.checked) {
       var others = lb.querySelectorAll('input:not(:first-of-type)');
@@ -437,6 +459,41 @@ function loadFilters(sheet) {
     otherCbs[i].addEventListener('change', function() {
       if (this.checked) lb.querySelector('input:first-of-type').checked = false;
     });
+  }
+
+  // Afficher filtres PULLMODE si fichier PULLMODE
+  var pmFilters = document.getElementById('pullmodeFilters');
+  if (fileType === 'PULLMODE') {
+    pmFilters.style.display = 'block';
+
+    // Demandeur SAP (col B) — multi-select
+    var ld = document.getElementById('listDemandeur');
+    ld.innerHTML = '';
+    ld.appendChild(mkItem('TOUS_DEM', '✦ Tous les demandeurs', true));
+    var dArr = Object.keys(demandeurs).sort();
+    for (var i = 0; i < dArr.length; i++) ld.appendChild(mkItem(dArr[i], dArr[i], false));
+    ld.querySelector('input').addEventListener('change', function() {
+      if (this.checked) {
+        var others = ld.querySelectorAll('input:not(:first-of-type)');
+        for (var i = 0; i < others.length; i++) others[i].checked = false;
+      }
+    });
+    var dCbs = ld.querySelectorAll('input:not(:first-of-type)');
+    for (var i = 0; i < dCbs.length; i++) {
+      dCbs[i].addEventListener('change', function() {
+        if (this.checked) ld.querySelector('input:first-of-type').checked = false;
+      });
+    }
+
+    // Système (col D) — liste déroulante simple
+    var selS = document.getElementById('selSysteme');
+    selS.innerHTML = '<option value="">(Tous les systèmes)</option>';
+    var sArr = Object.keys(systemes).sort();
+    for (var i = 0; i < sArr.length; i++) {
+      var o = document.createElement('option'); o.value = o.textContent = sArr[i]; selS.appendChild(o);
+    }
+  } else {
+    pmFilters.style.display = 'none';
   }
 }
 
@@ -459,11 +516,34 @@ function getFilters() {
   var sheet = document.getElementById('selFeuille').value;
   var zone  = document.getElementById('selZone').value.toUpperCase().trim();
   var type  = document.getElementById('selType').value;
-  var cbs   = document.getElementById('listFourn').querySelectorAll('input:checked');
+
+  // Fournisseurs
+  var cbs = document.getElementById('listFourn').querySelectorAll('input:checked');
   var checks = [];
   for (var i = 0; i < cbs.length; i++) checks.push(cbs[i].value.toUpperCase());
   var tousLesFourn = checks.indexOf('TOUS') >= 0 || checks.length === 0;
-  return { sheet: sheet, zone: zone, type: type, checks: checks, tousLesFourn: tousLesFourn };
+
+  // Demandeur SAP (PULLMODE uniquement)
+  var demChecks = [];
+  var tousDemandeurs = true;
+  if (fileType === 'PULLMODE') {
+    var dcbs = document.getElementById('listDemandeur').querySelectorAll('input:checked');
+    for (var i = 0; i < dcbs.length; i++) demChecks.push(dcbs[i].value.toUpperCase());
+    tousDemandeurs = demChecks.indexOf('TOUS_DEM') >= 0 || demChecks.length === 0;
+  }
+
+  // Système (PULLMODE uniquement)
+  var systeme = '';
+  if (fileType === 'PULLMODE') {
+    systeme = document.getElementById('selSysteme').value.toUpperCase().trim();
+  }
+
+  return {
+    sheet: sheet, zone: zone, type: type,
+    checks: checks, tousLesFourn: tousLesFourn,
+    demChecks: demChecks, tousDemandeurs: tousDemandeurs,
+    systeme: systeme
+  };
 }
 
 function getRef(r, type) {
@@ -478,14 +558,35 @@ function getRef(r, type) {
 function passeFiltres(r, f) {
   var colB = String(r[1] || '').trim().toUpperCase();
   var colC = String(r[2] || '').trim().toUpperCase();
+  var colD = String(r[3] || '').trim().toUpperCase();
   var colJ = String(r[9] || '').trim().toUpperCase();
+
+  // Filtre zone (col C)
   if (f.zone && colC.indexOf(f.zone) < 0) return false;
-  if (colB === 'X') return false;
+
+  // Ignorer SAP = X (col B) — seulement pour ADTA
+  if (fileType !== 'PULLMODE' && colB === 'X') return false;
+
+  // Filtre fournisseur (col J)
   if (!f.tousLesFourn) {
     var match = false;
     for (var k = 0; k < f.checks.length; k++) { if (colJ.indexOf(f.checks[k]) >= 0) { match = true; break; } }
     if (!match) return false;
   }
+
+  // Filtres PULLMODE uniquement
+  if (fileType === 'PULLMODE') {
+    // Filtre Demandeur SAP (col B)
+    if (!f.tousDemandeurs) {
+      var dem = colB;
+      var dmatch = false;
+      for (var k = 0; k < f.demChecks.length; k++) { if (dem.indexOf(f.demChecks[k]) >= 0) { dmatch = true; break; } }
+      if (!dmatch) return false;
+    }
+    // Filtre Système (col D)
+    if (f.systeme && colD.indexOf(f.systeme) < 0) return false;
+  }
+
   return true;
 }
 
@@ -540,13 +641,18 @@ document.getElementById('btnGenerer').addEventListener('click', function() {
 // ── AFFICHAGE RÉSULTAT ───────────────────────────────────────────
 function renderResult(f) {
   var ftCls = fileType === 'ADTA' ? 'ta' : fileType === 'PULLMODE' ? 'tp' : '';
-  document.getElementById('tagsRow').innerHTML =
+  var tagsHtml =
     '<span class="tag ' + ftCls + '">' + (fileType || '?') + '</span>' +
     '<span class="tag">' + selectedTpl.toUpperCase() + '</span>' +
     '<span class="tag">📋 ' + f.sheet + '</span>' +
     '<span class="tag">Type: ' + f.type + '</span>' +
     '<span class="tag">Zone: ' + (f.zone || 'Toutes') + '</span>' +
     '<span class="tag">Fourn: ' + (f.tousLesFourn ? 'Tous' : f.checks.join(' + ')) + '</span>';
+  if (fileType === 'PULLMODE') {
+    tagsHtml += '<span class="tag">Dem: ' + (f.tousDemandeurs ? 'Tous' : f.demChecks.join(' + ')) + '</span>';
+    tagsHtml += '<span class="tag">Sys: ' + (f.systeme || 'Tous') + '</span>';
+  }
+  document.getElementById('tagsRow').innerHTML = tagsHtml;
 
   document.getElementById('countBadge').textContent = resultData.length + ' ligne' + (resultData.length > 1 ? 's' : '');
 
