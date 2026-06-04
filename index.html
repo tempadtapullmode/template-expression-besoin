@@ -44,27 +44,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .upload-zone h3{font-size:15px;font-weight:500;margin-bottom:6px}
 .upload-zone p{color:var(--muted);font-size:12px}
 .upload-zone strong{color:var(--accent);font-weight:500}
-.file-banner{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;margin-top:12px;border:1px solid}
-.file-banner.adta{background:rgba(79,142,247,.07);border-color:rgba(79,142,247,.2)}
-.file-banner.pullmode{background:rgba(124,92,252,.07);border-color:rgba(124,92,252,.2)}
-.file-banner.unknown{background:rgba(245,166,35,.07);border-color:rgba(245,166,35,.2)}
-.type-pill{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;flex-shrink:0}
-.pill-adta{background:rgba(79,142,247,.2);color:#7ab3ff}
-.pill-pullmode{background:rgba(124,92,252,.2);color:#b79dff}
-.pill-unknown{background:rgba(245,166,35,.2);color:#f5c842}
+.file-banner{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;margin-top:12px;border:1px solid;background:rgba(45,212,160,.07);border-color:rgba(45,212,160,.2)}
 .finfo strong{display:block;font-size:13px;font-weight:500}
 .finfo span{font-size:11px;color:var(--muted)}
-.manual-type{margin-top:12px}
-.manual-type p{font-size:12px;color:var(--warn);margin-bottom:8px}
-.type-btns{display:flex;gap:8px}
-.type-btn{flex:1;padding:11px;border-radius:9px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
-.type-btn.sel-adta{border-color:var(--accent);background:rgba(79,142,247,.1);color:#7ab3ff}
-.type-btn.sel-pullmode{border-color:var(--purple);background:var(--purple-glow);color:#b79dff}
 .tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tpl-card{border:1.5px solid var(--border2);border-radius:11px;padding:16px 14px;cursor:pointer;transition:all .2s;text-align:center;position:relative;background:var(--surface2)}
-.tpl-card:not(.disabled):hover{border-color:var(--accent);background:var(--accent-glow);transform:translateY(-2px)}
+.tpl-card:hover{border-color:var(--accent);background:var(--accent-glow);transform:translateY(-2px)}
 .tpl-card.selected{border-color:var(--success);background:var(--success-glow)}
-.tpl-card.disabled{opacity:.3;cursor:not-allowed}
 .tpl-icon{font-size:24px;margin-bottom:8px;display:block}
 .tpl-name{font-size:13px;font-weight:600}
 .tpl-check{position:absolute;top:10px;right:10px;color:var(--success);font-size:13px;font-weight:700}
@@ -101,8 +87,6 @@ select option{background:#191d2a}
 .count-badge{background:rgba(45,212,160,.1);color:var(--success);border:1px solid rgba(45,212,160,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;font-family:'DM Mono',monospace}
 .tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .tag{display:inline-flex;align-items:center;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:5px;padding:3px 9px;font-size:11px;font-family:'DM Mono',monospace}
-.tag.ta{background:rgba(79,142,247,.08);border-color:rgba(79,142,247,.2);color:#7ab3ff}
-.tag.tp{background:var(--purple-glow);border-color:rgba(124,92,252,.2);color:#b79dff}
 .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{background:var(--surface2);color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px;padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;font-size:10px}
@@ -123,10 +107,10 @@ td.num{color:var(--muted);font-size:10px}
     <div class="logo-icon">🏛</div>
     <div>
       <h1>Template <span>Expression de besoin</span></h1>
-      <p>Générateur de liste depuis ADTA &amp; PULLMODE</p>
+      <p>Générateur de liste — CITADEL, Easybuy, SAP</p>
     </div>
   </div>
-  <span class="vbadge">v3.0</span>
+  <span class="vbadge">v4.0</span>
 </div>
 
 <div class="steps">
@@ -147,18 +131,9 @@ td.num{color:var(--muted);font-size:10px}
     <div style="font-size:32px;margin-bottom:10px">📂</div>
     <h3>Glisse ton fichier ici</h3>
     <p>ou <strong>clique pour parcourir</strong></p>
-    <p style="margin-top:6px">ADTA 2026… ou PULLMODE… · .xlsx .xlsm .xls</p>
+    <p style="margin-top:6px">.xlsx .xlsm .xls</p>
   </div>
   <div id="fileBanner" style="display:none"></div>
-  <div id="manualType" style="display:none">
-    <div class="manual-type">
-      <p>⚠ Type non détecté — choisis manuellement :</p>
-      <div class="type-btns">
-        <button class="type-btn" id="btnAdta" onclick="setType('ADTA')">📋 ADTA</button>
-        <button class="type-btn" id="btnPullmode" onclick="setType('PULLMODE')">🔄 PULLMODE</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- STEP 2 -->
@@ -166,18 +141,15 @@ td.num{color:var(--muted);font-size:10px}
   <div class="card-header"><div class="cdot" style="background:var(--purple)"></div><span class="ctitle">Template de sortie</span></div>
   <div class="tpl-grid">
     <div class="tpl-card selected" id="tpl-citadel" onclick="selectTpl('citadel')">
-      <span class="tpl-icon">🏛</span>
-      <div class="tpl-name">CITADEL</div>
+      <span class="tpl-icon">🏛</span><div class="tpl-name">CITADEL</div>
       <span class="tpl-check" id="chk-citadel">✓</span>
     </div>
     <div class="tpl-card" id="tpl-easybuy" onclick="selectTpl('easybuy')">
-      <span class="tpl-icon">🛒</span>
-      <div class="tpl-name">Easybuy</div>
+      <span class="tpl-icon">🛒</span><div class="tpl-name">Easybuy</div>
       <span class="tpl-check" id="chk-easybuy" style="display:none">✓</span>
     </div>
     <div class="tpl-card" id="tpl-sap" onclick="selectTpl('sap')">
-      <span class="tpl-icon">⚙️</span>
-      <div class="tpl-name">SAP</div>
+      <span class="tpl-icon">⚙️</span><div class="tpl-name">SAP</div>
       <span class="tpl-check" id="chk-sap" style="display:none">✓</span>
     </div>
   </div>
@@ -191,19 +163,16 @@ td.num{color:var(--muted);font-size:10px}
     <span class="cbadge" id="typeLabel">—</span>
   </div>
 
-  <!-- Mapping CITADEL -->
   <div class="mbox" id="mapCitadel">
     <div class="mtitle">Correspondance — CITADEL</div>
     <div class="mgrid" style="grid-template-columns:repeat(5,1fr)">
       <div class="mcol"><div class="mc-label">Col A</div><div class="mc-name">Référence</div><span class="mc-src">A/O/H</span></div>
       <div class="mcol"><div class="mc-label">Col B</div><div class="mc-name">Demandeur SAP</div><span class="mc-src">col. B</span></div>
-      <div class="mcol"><div class="mc-label">Col C</div><div class="mc-name">Fournisseur</div><span class="mc-src">col. J</span></div>
-      <div class="mcol"><div class="mc-label">Col D</div><div class="mc-name">Qté installée</div><span class="mc-src">col. T</span></div>
-      <div class="mcol"><div class="mc-label">Col E</div><div class="mc-name">N° affaire</div><span class="mc-src">col. Z</span></div>
+      <div class="mcol"><div class="mc-label">Col C</div><div class="mc-name">Fournisseur</div><span class="mc-src">col. K</span></div>
+      <div class="mcol"><div class="mc-label">Col D</div><div class="mc-name">Qté installée</div><span class="mc-src">col. U</span></div>
+      <div class="mcol"><div class="mc-label">Col E</div><div class="mc-name">N° affaire</div><span class="mc-src">col. AA</span></div>
     </div>
   </div>
-
-  <!-- Mapping EASYBUY -->
   <div class="mbox" id="mapEasybuy" style="display:none">
     <div class="mtitle">Correspondance — EASYBUY</div>
     <div class="mgrid" style="grid-template-columns:repeat(7,1fr)">
@@ -216,8 +185,6 @@ td.num{color:var(--muted);font-size:10px}
       <div class="mcol"><div class="mc-label">Col U</div><div class="mc-name">ID adresse</div><span class="mc-src">#N/A</span></div>
     </div>
   </div>
-
-  <!-- Mapping SAP -->
   <div class="mbox" id="mapSap" style="display:none">
     <div class="mtitle">Correspondance — SAP</div>
     <div class="mgrid" style="grid-template-columns:repeat(5,1fr)">
@@ -226,7 +193,7 @@ td.num{color:var(--muted);font-size:10px}
       <div class="mcol"><div class="mc-label">Col C</div><div class="mc-name">Famille achat</div><span class="mc-src">col. E</span></div>
       <div class="mcol"><div class="mc-label">Col D</div><div class="mc-name">Quantité</div><span class="mc-src">col. T</span></div>
       <div class="mcol"><div class="mc-label">Col I</div><div class="mc-name">Fournisseur</div><span class="mc-src">col. K</span></div>
-      <div class="mcol"><div class="mc-label">Col J</div><div class="mc-name">N° art. fourn.</div><span class="mc-src">A(R) / O(E)</span></div>
+      <div class="mcol"><div class="mc-label">Col J</div><div class="mc-name">N° art. fourn.</div><span class="mc-src">A(R)/O(E)/H(X)</span></div>
       <div class="mcol"><div class="mc-label">Col K</div><div class="mc-name">Demandeur</div><span class="mc-src">col. B</span></div>
       <div class="mcol"><div class="mc-label">Col N</div><div class="mc-name">Affaire</div><span class="mc-src">col. Z</span></div>
       <div class="mcol"><div class="mc-label">Col Q</div><div class="mc-name">Date livraison</div><span class="mc-src">#N/A</span></div>
@@ -248,29 +215,63 @@ td.num{color:var(--muted);font-size:10px}
       </select>
     </div>
   </div>
-  <div class="grid2">
+
+  <div class="grid2" style="margin-bottom:14px">
     <div>
       <label>Zone <small style="font-weight:400;text-transform:none">(colonne C)</small></label>
-      <select id="selZone"><option value="">(Toutes les zones)</option></select>
+      <div class="listbox" id="listZone"></div>
+      <div class="hint">Coche plusieurs zones si besoin</div>
     </div>
     <div>
-      <label>Fournisseurs <small style="font-weight:400;text-transform:none">(colonne J)</small></label>
+      <label>Fournisseurs <small style="font-weight:400;text-transform:none">(colonne K)</small></label>
       <div class="listbox" id="listFourn"></div>
       <div class="hint">Coche plusieurs fournisseurs si besoin</div>
     </div>
   </div>
-  <!-- Filtres PULLMODE uniquement -->
-  <div id="pullmodeFilters" style="display:none">
-    <div class="grid2" style="margin-top:14px">
-      <div>
-        <label>Demandeur SAP <small style="font-weight:400;text-transform:none">(colonne B) — PULLMODE</small></label>
-        <div class="listbox" id="listDemandeur"></div>
-        <div class="hint">Coche plusieurs demandeurs si besoin</div>
-      </div>
-      <div>
-        <label>Système <small style="font-weight:400;text-transform:none">(colonne D) — PULLMODE</small></label>
-        <select id="selSysteme"><option value="">(Tous les systèmes)</option></select>
-      </div>
+
+  <div class="grid2" style="margin-bottom:14px">
+    <div>
+      <label>Demandeur (SAP) <small style="font-weight:400;text-transform:none">(colonne B)</small></label>
+      <div class="listbox" id="listDemandeur"></div>
+      <div class="hint">Coche plusieurs demandeurs si besoin</div>
+    </div>
+    <div>
+      <label>Système <small style="font-weight:400;text-transform:none">(colonne D)</small></label>
+      <div class="listbox" id="listSysteme"></div>
+      <div class="hint">Coche plusieurs systèmes si besoin</div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:14px">
+    <div>
+      <label>Connu sous EASYBUY <small style="font-weight:400;text-transform:none">(colonne N)</small></label>
+      <div class="listbox" id="listEasybuy"></div>
+      <div class="hint">Coche plusieurs valeurs si besoin</div>
+    </div>
+    <div>
+      <label>Unité <small style="font-weight:400;text-transform:none">(colonne Q)</small></label>
+      <div class="listbox" id="listUnite"></div>
+      <div class="hint">Coche plusieurs unités si besoin</div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:14px">
+    <div>
+      <label>Lieu de livraison <small style="font-weight:400;text-transform:none">(colonne AC)</small></label>
+      <div class="listbox" id="listLieu"></div>
+      <div class="hint">Coche plusieurs lieux si besoin</div>
+    </div>
+    <div>
+      <label>Marque / Fabriquant <small style="font-weight:400;text-transform:none">(colonne J)</small></label>
+      <div class="listbox" id="listMarque"></div>
+      <div class="hint">Coche plusieurs marques si besoin</div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-bottom:14px">
+    <div>
+      <label>N° affaire <small style="font-weight:400;text-transform:none">(colonne AA)</small></label>
+      <div class="listbox" id="listAffaire"></div>
+      <div class="hint">Coche plusieurs affaires si besoin</div>
     </div>
   </div>
 
@@ -304,487 +305,389 @@ td.num{color:var(--muted);font-size:10px}
 
 </div>
 <script>
-var wb = null;
-var fileType = null;
-var selectedTpl = 'citadel';
-var resultData = [];
+var wb = null, selectedTpl = 'citadel', resultData = [], sheetData = [];
 
-// ── STEPS ──────────────────────────────────────────────────────
+// Colonnes (index 0-based)
+var C = {
+  ref_A: 0, dem: 1, zone: 2, sys: 3, famille: 4,
+  ref_H: 7, desig: 8, fourn: 10, ref_O: 14,
+  qte: 20, affaire: 26, unite: 16, easybuy: 13, lieu: 28, marque: 9
+};
+
 function setStep(n) {
-  for (var i = 1; i <= 4; i++) {
-    var el = document.getElementById('s' + i);
-    el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+  for (var i=1;i<=4;i++) {
+    document.getElementById('s'+i).className = 'step'+(i<n?' done':i===n?' active':'');
   }
 }
 
-// ── UPLOAD ──────────────────────────────────────────────────────
-var dropZone  = document.getElementById('dropZone');
+// UPLOAD
+var dropZone = document.getElementById('dropZone');
 var fileInput = document.getElementById('fileInput');
-
-dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag'); });
-dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag'); });
-dropZone.addEventListener('drop', function(e) {
-  e.preventDefault(); dropZone.classList.remove('drag');
-  if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
-});
-fileInput.addEventListener('change', function(e) {
-  if (e.target.files[0]) processFile(e.target.files[0]);
-});
+dropZone.addEventListener('dragover', function(e){e.preventDefault();dropZone.classList.add('drag');});
+dropZone.addEventListener('dragleave', function(){dropZone.classList.remove('drag');});
+dropZone.addEventListener('drop', function(e){e.preventDefault();dropZone.classList.remove('drag');if(e.dataTransfer.files[0])processFile(e.dataTransfer.files[0]);});
+fileInput.addEventListener('change', function(e){if(e.target.files[0])processFile(e.target.files[0]);});
 
 function processFile(file) {
-  var upper = file.name.toUpperCase();
-  fileType = upper.indexOf('ADTA') >= 0 ? 'ADTA' : upper.indexOf('PULLMODE') >= 0 ? 'PULLMODE' : null;
-  renderBanner(file.name);
+  var banner = document.getElementById('fileBanner');
+  banner.innerHTML = '<div class="file-banner"><div class="finfo"><strong>📄 '+file.name+'</strong><span>Fichier chargé ✓</span></div></div>';
+  banner.style.display = 'block';
   var reader = new FileReader();
   reader.onload = function(e) {
     try {
-      wb = XLSX.read(e.target.result, { type: 'array' });
+      wb = XLSX.read(e.target.result, {type:'array'});
       populateFeuilles();
       document.getElementById('cardTemplate').style.display = 'block';
       document.getElementById('cardFiltres').style.display  = 'block';
       setStep(2);
-    } catch(err) { alert('Erreur lecture fichier : ' + err.message); }
+    } catch(err) { alert('Erreur : '+err.message); }
   };
   reader.readAsArrayBuffer(file);
 }
 
-function renderBanner(name) {
-  var banner = document.getElementById('fileBanner');
-  var manual = document.getElementById('manualType');
-  if (fileType) {
-    var cls  = fileType === 'ADTA' ? 'adta' : 'pullmode';
-    var pill = fileType === 'ADTA' ? 'pill-adta' : 'pill-pullmode';
-    banner.innerHTML = '<div class="file-banner ' + cls + '"><span class="type-pill ' + pill + '">' + fileType + '</span><div class="finfo"><strong>📄 ' + name + '</strong><span>Type détecté automatiquement ✓</span></div></div>';
-    manual.style.display = 'none';
-  } else {
-    banner.innerHTML = '<div class="file-banner unknown"><span class="type-pill pill-unknown">?</span><div class="finfo"><strong>📄 ' + name + '</strong><span>Type non détecté</span></div></div>';
-    manual.style.display = 'block';
-  }
-  banner.style.display = 'block';
-  document.getElementById('typeLabel').textContent = fileType || '?';
-}
-
-function setType(t) {
-  fileType = t;
-  document.getElementById('btnAdta').className    = 'type-btn' + (t === 'ADTA'    ? ' sel-adta'    : '');
-  document.getElementById('btnPullmode').className = 'type-btn' + (t === 'PULLMODE' ? ' sel-pullmode' : '');
-  document.getElementById('typeLabel').textContent = t;
-}
-
-// ── TEMPLATE ────────────────────────────────────────────────────
+// TEMPLATE
 function selectTpl(t) {
   selectedTpl = t;
-  var ids = ['citadel', 'easybuy', 'sap'];
-  for (var i = 0; i < ids.length; i++) {
-    var card = document.getElementById('tpl-' + ids[i]);
-    var chk  = document.getElementById('chk-' + ids[i]);
-    var map  = document.getElementById('map'  + ids[i].charAt(0).toUpperCase() + ids[i].slice(1));
-    if (card) card.className = 'tpl-card' + (ids[i] === t ? ' selected' : '');
-    if (chk)  chk.style.display  = ids[i] === t ? 'block' : 'none';
-    if (map)  map.style.display  = ids[i] === t ? 'block' : 'none';
-  }
-  var titles = { citadel: 'Filtres CITADEL', easybuy: 'Filtres EASYBUY', sap: 'Filtres SAP' };
-  document.getElementById('filtreTitle').textContent = titles[t] || 'Filtres';
-
-  // Adapter les options Type d'import selon le template
-  var selType = document.getElementById('selType');
-  selType.innerHTML = '';
-  if (t === 'sap') {
-    selType.innerHTML =
-      '<option value="R">R — Référence (Article) — col. A</option>' +
-      '<option value="E">E — Référence Easybuy — col. O</option>';
-  } else {
-    selType.innerHTML =
-      '<option value="R">R — Référence (Article) — col. A</option>' +
-      '<option value="E">E — Référence Easybuy — col. O</option>' +
-      '<option value="X">X — Référence SAP — col. H</option>';
-  }
+  ['citadel','easybuy','sap'].forEach(function(id) {
+    document.getElementById('tpl-'+id).className = 'tpl-card'+(id===t?' selected':'');
+    document.getElementById('chk-'+id).style.display = id===t?'block':'none';
+    document.getElementById('map'+id.charAt(0).toUpperCase()+id.slice(1)).style.display = id===t?'block':'none';
+  });
+  var titles = {citadel:'Filtres CITADEL',easybuy:'Filtres EASYBUY',sap:'Filtres SAP'};
+  document.getElementById('filtreTitle').textContent = titles[t];
+  var sel = document.getElementById('selType');
+  sel.innerHTML = t === 'sap'
+    ? '<option value="R">R — Référence (Article) — col. A</option><option value="E">E — Référence Easybuy — col. O</option><option value="X">X — Référence SAP — col. H</option>'
+    : '<option value="R">R — Référence (Article) — col. A</option><option value="E">E — Référence Easybuy — col. O</option><option value="X">X — Référence SAP — col. H</option>';
 }
 
-// ── FEUILLES ─────────────────────────────────────────────────────
+// FEUILLES
 function populateFeuilles() {
   var sel = document.getElementById('selFeuille');
-  sel.innerHTML = '<option value="">— Choisir une feuille —</option>';
-  for (var i = 0; i < wb.SheetNames.length; i++) {
-    var o = document.createElement('option');
-    o.value = o.textContent = wb.SheetNames[i];
-    sel.appendChild(o);
-  }
+  sel.innerHTML = '<option value="">— Choisir —</option>';
+  wb.SheetNames.forEach(function(n){var o=document.createElement('option');o.value=o.textContent=n;sel.appendChild(o);});
 }
 
 document.getElementById('selFeuille').addEventListener('change', function() {
-  if (!this.value) { document.getElementById('btnGenerer').disabled = true; return; }
-  loadFilters(this.value);
+  if (!this.value) { document.getElementById('btnGenerer').disabled=true; return; }
+  loadSheetData(this.value);
   document.getElementById('btnGenerer').disabled = false;
   setStep(3);
 });
 
-function loadFilters(sheet) {
-  var data = XLSX.utils.sheet_to_json(wb.Sheets[sheet], { header: 1, defval: '' });
-  var zones = {}, fourns = {}, demandeurs = {}, systemes = {};
-  for (var i = 1; i < data.length; i++) {
-    var r = data[i];
-    var z = String(r[2]  || '').trim();
-    var f = String(r[9]  || '').trim();
-    var d = String(r[1]  || '').trim();
-    var s = String(r[3]  || '').trim();
-    if (z) zones[z]     = 1;
-    if (f) fourns[f]    = 1;
-    if (d) demandeurs[d]= 1;
-    if (s) systemes[s]  = 1;
-  }
+
+
+document.getElementById('selType').addEventListener('change', function() {
+  if (sheetData.length > 0) refreshDependent();
+});
+
+function loadSheetData(sheet) {
+  sheetData = XLSX.utils.sheet_to_json(wb.Sheets[sheet], {header:1, defval:''});
 
   // Zones
-  var selZ = document.getElementById('selZone');
-  selZ.innerHTML = '<option value="">(Toutes les zones)</option>';
-  var zArr = Object.keys(zones).sort();
-  for (var i = 0; i < zArr.length; i++) {
-    var o = document.createElement('option'); o.value = o.textContent = zArr[i]; selZ.appendChild(o);
+  var zones = {};
+  for (var i=1;i<sheetData.length;i++) {
+    var z = String(sheetData[i][C.zone]||'').trim();
+    if (z) zones[z]=1;
   }
+  var lz = document.getElementById('listZone');
+  lz.innerHTML = '';
+  lz.appendChild(mkItem('__TOUS__', '✦ Toutes les zones', true));
+  Object.keys(zones).sort().forEach(function(z){lz.appendChild(mkItem(z,z,false));});
+  setupList(lz, function(){ setTimeout(function(){ refreshFourn(); refreshDependent(); }, 50); });
 
-  // Fournisseurs
-  var lb = document.getElementById('listFourn');
-  lb.innerHTML = '';
-  lb.appendChild(mkItem('TOUS', '✦ Tous les fournisseurs', true));
-  var fArr = Object.keys(fourns).sort();
-  for (var i = 0; i < fArr.length; i++) lb.appendChild(mkItem(fArr[i], fArr[i], false));
-  lb.querySelector('input').addEventListener('change', function() {
-    if (this.checked) {
-      var others = lb.querySelectorAll('input:not(:first-of-type)');
-      for (var i = 0; i < others.length; i++) others[i].checked = false;
-    }
-  });
-  var otherCbs = lb.querySelectorAll('input:not(:first-of-type)');
-  for (var i = 0; i < otherCbs.length; i++) {
-    otherCbs[i].addEventListener('change', function() {
-      if (this.checked) lb.querySelector('input:first-of-type').checked = false;
-    });
-  }
-
-  // Afficher filtres PULLMODE si fichier PULLMODE
-  var pmFilters = document.getElementById('pullmodeFilters');
-  if (fileType === 'PULLMODE') {
-    pmFilters.style.display = 'block';
-
-    // Demandeur SAP (col B) — multi-select
-    var ld = document.getElementById('listDemandeur');
-    ld.innerHTML = '';
-    ld.appendChild(mkItem('TOUS_DEM', '✦ Tous les demandeurs', true));
-    var dArr = Object.keys(demandeurs).sort();
-    for (var i = 0; i < dArr.length; i++) ld.appendChild(mkItem(dArr[i], dArr[i], false));
-    ld.querySelector('input').addEventListener('change', function() {
-      if (this.checked) {
-        var others = ld.querySelectorAll('input:not(:first-of-type)');
-        for (var i = 0; i < others.length; i++) others[i].checked = false;
-      }
-    });
-    var dCbs = ld.querySelectorAll('input:not(:first-of-type)');
-    for (var i = 0; i < dCbs.length; i++) {
-      dCbs[i].addEventListener('change', function() {
-        if (this.checked) ld.querySelector('input:first-of-type').checked = false;
-      });
-    }
-
-    // Système (col D) — liste déroulante simple
-    var selS = document.getElementById('selSysteme');
-    selS.innerHTML = '<option value="">(Tous les systèmes)</option>';
-    var sArr = Object.keys(systemes).sort();
-    for (var i = 0; i < sArr.length; i++) {
-      var o = document.createElement('option'); o.value = o.textContent = sArr[i]; selS.appendChild(o);
-    }
-  } else {
-    pmFilters.style.display = 'none';
-  }
+  // Fournisseurs (tous, pas filtrés par zone au départ)
+  refreshFourn();
+  refreshAll();
 }
 
-function mkItem(val, label, checked) {
-  var div = document.createElement('div');
-  div.className = 'litem' + (checked ? ' on' : '');
-  var cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = val; cb.checked = checked;
-  var sp = document.createElement('span'); sp.textContent = label;
-  div.appendChild(cb); div.appendChild(sp);
-  div.addEventListener('click', function(e) {
-    if (e.target !== cb) { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
-    div.className = 'litem' + (cb.checked ? ' on' : '');
-  });
-  cb.addEventListener('change', function() { div.className = 'litem' + (cb.checked ? ' on' : ''); });
-  return div;
+function getZone() {
+  var cbs = document.getElementById('listZone').querySelectorAll('input:checked');
+  var vals = [];
+  for (var i=0;i<cbs.length;i++) vals.push(cbs[i].value.toUpperCase());
+  if (vals.indexOf('__TOUS__')>=0 || vals.length===0) return [];
+  return vals;
 }
+function getType() { return document.getElementById('selType').value; }
 
-// ── FILTRES COMMUNS ──────────────────────────────────────────────
-function getFilters() {
-  var sheet = document.getElementById('selFeuille').value;
-  var zone  = document.getElementById('selZone').value.toUpperCase().trim();
-  var type  = document.getElementById('selType').value;
-
-  // Fournisseurs
-  var cbs = document.getElementById('listFourn').querySelectorAll('input:checked');
-  var checks = [];
-  for (var i = 0; i < cbs.length; i++) checks.push(cbs[i].value.toUpperCase());
-  var tousLesFourn = checks.indexOf('TOUS') >= 0 || checks.length === 0;
-
-  // Demandeur SAP (PULLMODE uniquement)
-  var demChecks = [];
-  var tousDemandeurs = true;
-  if (fileType === 'PULLMODE') {
-    var dcbs = document.getElementById('listDemandeur').querySelectorAll('input:checked');
-    for (var i = 0; i < dcbs.length; i++) demChecks.push(dcbs[i].value.toUpperCase());
-    tousDemandeurs = demChecks.indexOf('TOUS_DEM') >= 0 || demChecks.length === 0;
-  }
-
-  // Système (PULLMODE uniquement)
-  var systeme = '';
-  if (fileType === 'PULLMODE') {
-    systeme = document.getElementById('selSysteme').value.toUpperCase().trim();
-  }
-
-  return {
-    sheet: sheet, zone: zone, type: type,
-    checks: checks, tousLesFourn: tousLesFourn,
-    demChecks: demChecks, tousDemandeurs: tousDemandeurs,
-    systeme: systeme
-  };
+function getChecked(id) {
+  var cbs = document.getElementById(id).querySelectorAll('input:checked');
+  var vals = [];
+  for (var i=0;i<cbs.length;i++) vals.push(cbs[i].value.toUpperCase());
+  return vals;
 }
+function isTous(vals) { return vals.indexOf('__TOUS__')>=0 || vals.length===0; }
 
 function getRef(r, type) {
-  var ref = '';
-  if      (type === 'R') ref = String(r[0]  || '').trim();
-  else if (type === 'E') ref = String(r[14] || '').trim();
-  else if (type === 'X') ref = String(r[7]  || '').trim();
-  if (!ref || ref.toUpperCase() === 'N/A' || ref.toUpperCase() === 'NA' || ref === '-') return null;
+  var ref = type==='R' ? String(r[C.ref_A]||'').trim() : type==='E' ? String(r[C.ref_O]||'').trim() : String(r[C.ref_H]||'').trim();
+  if (!ref || ref.toUpperCase()==='N/A' || ref.toUpperCase()==='NA' || ref==='-') return null;
   return ref;
 }
 
-function passeFiltres(r, f) {
-  var colB = String(r[1] || '').trim().toUpperCase();
-  var colC = String(r[2] || '').trim().toUpperCase();
-  var colD = String(r[3] || '').trim().toUpperCase();
-  var colJ = String(r[9] || '').trim().toUpperCase();
+function isValid(v) {
+  var u = v.toUpperCase();
+  return v && u!=='#N/A' && u!=='#VALEUR!' && u!=='NA' && v!=='-' && u!=='X';
+}
 
-  // Filtre zone (col C)
-  if (f.zone && colC.indexOf(f.zone) < 0) return false;
-
-  // Ignorer SAP = X (col B) — seulement pour ADTA
-  if (fileType !== 'PULLMODE' && colB === 'X') return false;
-
-  // Filtre fournisseur (col J)
-  if (!f.tousLesFourn) {
-    var match = false;
-    for (var k = 0; k < f.checks.length; k++) { if (colJ.indexOf(f.checks[k]) >= 0) { match = true; break; } }
-    if (!match) return false;
+function rowPassesBaseFilters(r, zoneVals, fChecks, tousFourn) {
+  var z = String(r[C.zone]||'').trim().toUpperCase();
+  if (zoneVals.length > 0) {
+    var zm=false;
+    for (var k=0;k<zoneVals.length;k++){if(z===zoneVals[k]){zm=true;break;}}
+    if (!zm) return false;
   }
-
-  // Filtres PULLMODE uniquement
-  if (fileType === 'PULLMODE') {
-    // Filtre Demandeur SAP (col B)
-    if (!f.tousDemandeurs) {
-      var dem = colB;
-      var dmatch = false;
-      for (var k = 0; k < f.demChecks.length; k++) { if (dem.indexOf(f.demChecks[k]) >= 0) { dmatch = true; break; } }
-      if (!dmatch) return false;
-    }
-    // Filtre Système (col D)
-    if (f.systeme && colD.indexOf(f.systeme) < 0) return false;
+  if (!tousFourn) {
+    var j = String(r[C.fourn]||'').trim().toUpperCase();
+    var fm=false;
+    for (var k=0;k<fChecks.length;k++) { if (j.indexOf(fChecks[k])>=0){fm=true;break;} }
+    if (!fm) return false;
   }
-
   return true;
 }
 
-// ── GENERER ──────────────────────────────────────────────────────
-document.getElementById('btnGenerer').addEventListener('click', function() {
-  var f = getFilters();
-  if (!f.sheet) return;
-  var data = XLSX.utils.sheet_to_json(wb.Sheets[f.sheet], { header: 1, defval: '' });
-  resultData = [];
+function refreshFourn() {
+  var zoneVals = getZone();
+  var fourns = {};
+  for (var i=1;i<sheetData.length;i++) {
+    var r = sheetData[i];
+    var z = String(r[C.zone]||'').trim().toUpperCase();
+    if (zoneVals.length > 0) {
+      var zm=false;
+      for (var k=0;k<zoneVals.length;k++){if(z===zoneVals[k]){zm=true;break;}}
+      if (!zm) continue;
+    }
+    var f = String(r[C.fourn]||'').trim();
+    if (f) fourns[f]=1;
+  }
+  var lb = document.getElementById('listFourn');
+  lb.innerHTML = '';
+  lb.appendChild(mkItem('__TOUS__','✦ Tous les fournisseurs',true));
+  Object.keys(fourns).sort().forEach(function(f){lb.appendChild(mkItem(f,f,false));});
+  setupList(lb, function(){ setTimeout(refreshDependent,50); });
+}
 
-  for (var i = 1; i < data.length; i++) {
-    var r = data[i];
-    if (!passeFiltres(r, f)) continue;
-    var ref = getRef(r, f.type);
+function refreshAll() {
+  refreshFourn();
+  refreshDependent();
+}
+
+function refreshDependent() {
+  var zoneVals = getZone();
+  var typeVal = getType();
+  var fChecks = getChecked('listFourn');
+  var tousFourn = isTous(fChecks);
+
+  // Demandeur
+  var dems={};
+  for (var i=1;i<sheetData.length;i++){
+    var r=sheetData[i];
+    if (!rowPassesBaseFilters(r,zoneVals,fChecks,tousFourn)) continue;
+    var d=String(r[C.dem]||'').trim();
+    if (d && d.toUpperCase()!=='X' && isValid(d)) dems[d]=1;
+  }
+  fillList('listDemandeur', dems, '✦ Tous les demandeurs', function(){ setTimeout(refreshDeeper,50); });
+
+  // Système
+  var sys={};
+  for (var i=1;i<sheetData.length;i++){
+    var r=sheetData[i];
+    if (!rowPassesBaseFilters(r,zoneVals,fChecks,tousFourn)) continue;
+    var s=String(r[C.sys]||'').trim();
+    if (isValid(s)) sys[s]=1;
+  }
+  fillList('listSysteme', sys, '✦ Tous les systèmes', function(){ setTimeout(refreshDeeper,50); });
+
+  refreshDeeper();
+}
+
+function refreshDeeper() {
+  var zoneVals = getZone();
+  var typeVal = getType();
+  var fChecks = getChecked('listFourn'); var tousFourn = isTous(fChecks);
+  var dChecks = getChecked('listDemandeur'); var tousDem = isTous(dChecks);
+  var sChecks = getChecked('listSysteme'); var tousSys = isTous(sChecks);
+
+  var eb={}, un={}, li={}, ma={}, aff={};
+  for (var i=1;i<sheetData.length;i++){
+    var r=sheetData[i];
+    if (!rowPassesBaseFilters(r,zoneVals,fChecks,tousFourn)) continue;
+    var d=String(r[C.dem]||'').trim().toUpperCase();
+    if (!tousDem){ var dm=false; for(var k=0;k<dChecks.length;k++){if(d.indexOf(dChecks[k])>=0){dm=true;break;}} if(!dm) continue; }
+    var s=String(r[C.sys]||'').trim().toUpperCase();
+    if (!tousSys){ var sm=false; for(var k=0;k<sChecks.length;k++){if(s.indexOf(sChecks[k])>=0){sm=true;break;}} if(!sm) continue; }
+    var ref=getRef(r,typeVal);
+    if (!ref) continue;
+    var e=String(r[C.easybuy]||'').trim();
+    if (isValid(e) && e.toUpperCase()!=='CONNU SOUS EASYBUY') eb[e]=1;
+    var u=String(r[C.unite]||'').trim();
+    if (isValid(u)) un[u]=1;
+    var l=String(r[C.lieu]||'').trim();
+    if (isValid(l)) li[l]=1;
+    var m=String(r[C.marque]||'').trim();
+    if (isValid(m)) ma[m]=1;
+    var af=String(r[C.affaire]||'').trim();
+    if (isValid(af)) aff[af]=1;
+  }
+  fillList('listEasybuy', eb,  '✦ Toutes les valeurs', null);
+  fillList('listUnite',   un,  '✦ Toutes les unités',  null);
+  fillList('listLieu',    li,  '✦ Tous les lieux',     null);
+  fillList('listMarque',  ma,  '✦ Toutes les marques', null);
+  fillList('listAffaire', aff, '✦ Toutes les affaires',null);
+}
+
+function fillList(id, obj, allLabel, onChange) {
+  var lb = document.getElementById(id);
+  lb.innerHTML = '';
+  lb.appendChild(mkItem('__TOUS__', allLabel, true));
+  Object.keys(obj).sort().forEach(function(v){lb.appendChild(mkItem(v,v,false));});
+  setupList(lb, onChange);
+}
+
+function setupList(lb, onChange) {
+  var first = lb.querySelector('input');
+  if (!first) return;
+  first.addEventListener('change', function(){
+    if (this.checked) lb.querySelectorAll('input:not(:first-of-type)').forEach(function(c){c.checked=false;});
+    if (onChange) onChange();
+  });
+  lb.querySelectorAll('input:not(:first-of-type)').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      if (this.checked) lb.querySelector('input:first-of-type').checked=false;
+      if (onChange) onChange();
+    });
+  });
+}
+
+function mkItem(val, label, checked) {
+  var div=document.createElement('div');
+  div.className='litem'+(checked?' on':'');
+  var cb=document.createElement('input');cb.type='checkbox';cb.value=val;cb.checked=checked;
+  var sp=document.createElement('span');sp.textContent=label;
+  div.appendChild(cb);div.appendChild(sp);
+  div.addEventListener('click',function(e){if(e.target!==cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}div.className='litem'+(cb.checked?' on':'');});
+  cb.addEventListener('change',function(){div.className='litem'+(cb.checked?' on':'');});
+  return div;
+}
+
+// GENERER
+document.getElementById('btnGenerer').addEventListener('click', function() {
+  var sheet  = document.getElementById('selFeuille').value;
+  var type   = getType();
+  var zoneVals = getZone();
+  var fChecks= getChecked('listFourn');    var tousFourn= isTous(fChecks);
+  var dChecks= getChecked('listDemandeur');var tousDem  = isTous(dChecks);
+  var sChecks= getChecked('listSysteme');  var tousSys  = isTous(sChecks);
+  var eChecks= getChecked('listEasybuy');  var tousEB   = isTous(eChecks);
+  var uChecks= getChecked('listUnite');    var tousUn   = isTous(uChecks);
+  var lChecks= getChecked('listLieu');     var tousLi   = isTous(lChecks);
+  var mChecks= getChecked('listMarque');   var tousMa   = isTous(mChecks);
+  var afChecks= getChecked('listAffaire'); var tousAf   = isTous(afChecks);
+
+  resultData = [];
+  for (var i=1;i<sheetData.length;i++){
+    var r=sheetData[i];
+    // Zone
+    var z=String(r[C.zone]||'').trim().toUpperCase();
+    if (zoneVals.length>0){var zm=false;for(var k=0;k<zoneVals.length;k++){if(z===zoneVals[k]){zm=true;break;}}if(!zm)continue;}
+    // Fournisseur
+    if (!tousFourn){var j=String(r[C.fourn]||'').trim().toUpperCase();var fm=false;for(var k=0;k<fChecks.length;k++){if(j.indexOf(fChecks[k])>=0){fm=true;break;}}if(!fm)continue;}
+    // Demandeur
+    if (!tousDem){var d=String(r[C.dem]||'').trim().toUpperCase();var dm=false;for(var k=0;k<dChecks.length;k++){if(d.indexOf(dChecks[k])>=0){dm=true;break;}}if(!dm)continue;}
+    // Système
+    if (!tousSys){var s=String(r[C.sys]||'').trim().toUpperCase();var sm=false;for(var k=0;k<sChecks.length;k++){if(s.indexOf(sChecks[k])>=0){sm=true;break;}}if(!sm)continue;}
+    // Connu EASYBUY — comparaison exacte
+    if (!tousEB){var e=String(r[C.easybuy]||'').trim().toUpperCase();var em=false;for(var k=0;k<eChecks.length;k++){if(e===eChecks[k]){em=true;break;}}if(!em)continue;}
+    // Unité — comparaison exacte
+    if (!tousUn){var u=String(r[C.unite]||'').trim().toUpperCase();var um=false;for(var k=0;k<uChecks.length;k++){if(u===uChecks[k]){um=true;break;}}if(!um)continue;}
+    // Lieu — comparaison exacte
+    if (!tousLi){var l=String(r[C.lieu]||'').trim().toUpperCase();var lm=false;for(var k=0;k<lChecks.length;k++){if(l===lChecks[k]){lm=true;break;}}if(!lm)continue;}
+    // Marque / Fabriquant — comparaison exacte
+    if (!tousMa){var m=String(r[C.marque]||'').trim().toUpperCase();var mm=false;for(var k=0;k<mChecks.length;k++){if(m===mChecks[k]){mm=true;break;}}if(!mm)continue;}
+    // N° affaire — comparaison exacte
+    if (!tousAf){var af=String(r[C.affaire]||'').trim().toUpperCase();var afm=false;for(var k=0;k<afChecks.length;k++){if(af===afChecks[k]){afm=true;break;}}if(!afm)continue;}
+    // Référence
+    var ref=getRef(r,type);
     if (!ref) continue;
 
-    if (selectedTpl === 'citadel') {
-      resultData.push({
-        ref:         ref,
-        demandeur:   String(r[1]  || '').trim(),
-        fournisseur: String(r[9]  || '').trim(),
-        qte:         String(r[19] || '').trim(),
-        affaire:     String(r[25] || '').trim()
-      });
-    } else if (selectedTpl === 'easybuy') {
-      resultData.push({
-        code:        ref,
-        qte:         String(r[19] || '').trim(),
-        fournisseur: String(r[10] || '').trim(),
-        demandeur:   String(r[1]  || '').trim(),
-        affaire:     String(r[25] || '').trim()
-      });
-    } else if (selectedTpl === 'sap') {
-      // Col J SAP : col A si R, col O si E
-      var artFournVal = f.type === 'E' ? String(r[14] || '').trim() : String(r[0] || '').trim();
-      resultData.push({
-        article:     '',                               // col A vide
-        designation: String(r[8]  || '').trim(),      // col I -> B SAP
-        famille:     String(r[4]  || '').trim(),      // col E -> C SAP
-        qte:         String(r[19] || '').trim(),      // col T -> D SAP
-        fournisseur: String(r[10] || '').trim(),      // col K -> I SAP
-        artFourn:    artFournVal,                     // col A(R) ou O(E) -> J SAP
-        demandeur:   String(r[1]  || '').trim(),      // col B -> K SAP
-        affaire:     String(r[25] || '').trim()       // col Z -> N SAP
-      });
+    if (selectedTpl==='citadel') {
+      resultData.push({ref:ref, demandeur:String(r[C.dem]||'').trim(), fournisseur:String(r[C.fourn]||'').trim(), qte:String(r[C.qte]||'').trim(), affaire:String(r[C.affaire]||'').trim()});
+    } else if (selectedTpl==='easybuy') {
+      resultData.push({code:ref, qte:String(r[C.qte]||'').trim(), fournisseur:String(r[C.fourn]||'').trim(), demandeur:String(r[C.dem]||'').trim(), affaire:String(r[C.affaire]||'').trim()});
+    } else if (selectedTpl==='sap') {
+      resultData.push({article:'', designation:String(r[C.desig]||'').trim(), famille:String(r[C.famille]||'').trim(), qte:String(r[C.qte]||'').trim(), fournisseur:String(r[C.fourn]||'').trim(), artFourn:ref, demandeur:String(r[C.dem]||'').trim(), affaire:String(r[C.affaire]||'').trim()});
     }
   }
-
-  renderResult(f);
+  renderResult(zoneVals, tousFourn, fChecks, type);
 });
 
-// ── AFFICHAGE RÉSULTAT ───────────────────────────────────────────
-function renderResult(f) {
-  var ftCls = fileType === 'ADTA' ? 'ta' : fileType === 'PULLMODE' ? 'tp' : '';
-  var tagsHtml =
-    '<span class="tag ' + ftCls + '">' + (fileType || '?') + '</span>' +
-    '<span class="tag">' + selectedTpl.toUpperCase() + '</span>' +
-    '<span class="tag">📋 ' + f.sheet + '</span>' +
-    '<span class="tag">Type: ' + f.type + '</span>' +
-    '<span class="tag">Zone: ' + (f.zone || 'Toutes') + '</span>' +
-    '<span class="tag">Fourn: ' + (f.tousLesFourn ? 'Tous' : f.checks.join(' + ')) + '</span>';
-  if (fileType === 'PULLMODE') {
-    tagsHtml += '<span class="tag">Dem: ' + (f.tousDemandeurs ? 'Tous' : f.demChecks.join(' + ')) + '</span>';
-    tagsHtml += '<span class="tag">Sys: ' + (f.systeme || 'Tous') + '</span>';
+function renderResult(zoneVals, tousFourn, fChecks, type) {
+  document.getElementById('tagsRow').innerHTML =
+    '<span class="tag">'+selectedTpl.toUpperCase()+'</span>'+
+    '<span class="tag">Type: '+type+'</span>'+
+    '<span class="tag">Zone: '+(zoneVals.length===0?'Toutes':zoneVals.join(' + '))+'</span>'+
+    '<span class="tag">Fourn: '+(tousFourn?'Tous':fChecks.join(' + '))+'</span>';
+
+  document.getElementById('countBadge').textContent = resultData.length+' ligne'+(resultData.length>1?'s':'');
+  var titles={citadel:'Liste CITADEL',easybuy:'Liste EASYBUY',sap:'Liste SAP'};
+  document.getElementById('resultTitle').textContent = titles[selectedTpl];
+
+  var thead=document.getElementById('resultThead');
+  if (selectedTpl==='citadel') thead.innerHTML='<tr><th>#</th><th>A — Référence</th><th>B — Demandeur SAP</th><th>C — Fournisseur</th><th>D — Qté installée</th><th>E — N° affaire</th></tr>';
+  else if (selectedTpl==='easybuy') thead.innerHTML='<tr><th>#</th><th>B — Code Article</th><th>D — Quantité</th><th>J — Fournisseur</th><th>L — Demandeur Tech.</th><th>N — N° affaire</th><th>P — Date livraison</th></tr>';
+  else if (selectedTpl==='sap') thead.innerHTML='<tr><th>#</th><th>A — Article</th><th>B — Désignation</th><th>C — Famille</th><th>D — Qté</th><th>I — Fournisseur</th><th>K — Demandeur</th><th>N — Affaire</th></tr>';
+
+  var tbody=document.getElementById('tableBody');
+  if (!resultData.length){tbody.innerHTML='<tr><td colspan="8" class="empty-state">🔍 Aucune ligne ne correspond aux filtres</td></tr>';document.getElementById('cardResult').style.display='block';setStep(4);return;}
+  var html='',max=Math.min(resultData.length,300);
+  for (var i=0;i<max;i++){
+    var r=resultData[i];
+    if (selectedTpl==='citadel') html+='<tr><td class="num">'+(i+1)+'</td><td>'+esc(r.ref)+'</td><td>'+esc(r.demandeur)+'</td><td>'+esc(r.fournisseur)+'</td><td>'+esc(r.qte)+'</td><td>'+esc(r.affaire)+'</td></tr>';
+    else if (selectedTpl==='easybuy') html+='<tr><td class="num">'+(i+1)+'</td><td>'+esc(r.code)+'</td><td>'+esc(r.qte)+'</td><td>'+esc(r.fournisseur)+'</td><td>'+esc(r.demandeur)+'</td><td>'+esc(r.affaire)+'</td><td>#N/A</td></tr>';
+    else if (selectedTpl==='sap') html+='<tr><td class="num">'+(i+1)+'</td><td>'+esc(r.article)+'</td><td>'+esc(r.designation)+'</td><td>'+esc(r.famille)+'</td><td>'+esc(r.qte)+'</td><td>'+esc(r.fournisseur)+'</td><td>'+esc(r.demandeur)+'</td><td>'+esc(r.affaire)+'</td></tr>';
   }
-  document.getElementById('tagsRow').innerHTML = tagsHtml;
-
-  document.getElementById('countBadge').textContent = resultData.length + ' ligne' + (resultData.length > 1 ? 's' : '');
-
-  var titles = { citadel: 'Liste CITADEL', easybuy: 'Liste EASYBUY', sap: 'Liste SAP' };
-  document.getElementById('resultTitle').textContent = titles[selectedTpl] || 'Résultat';
-
-  var thead = document.getElementById('resultThead');
-  if (selectedTpl === 'citadel') {
-    thead.innerHTML = '<tr><th>#</th><th>A — Référence</th><th>B — Demandeur SAP</th><th>C — Fournisseur</th><th>D — Qté installée</th><th>E — N° affaire</th></tr>';
-  } else if (selectedTpl === 'easybuy') {
-    thead.innerHTML = '<tr><th>#</th><th>B — Code Article</th><th>D — Quantité</th><th>J — Fournisseur</th><th>L — Demandeur Tech.</th><th>N — N° affaire</th><th>P — Date livraison</th></tr>';
-  } else if (selectedTpl === 'sap') {
-    thead.innerHTML = '<tr><th>#</th><th>A — Article</th><th>B — Désignation</th><th>C — Famille</th><th>D — Qté</th><th>I — Fournisseur</th><th>K — Demandeur</th><th>N — Affaire</th></tr>';
-  }
-
-  var tbody = document.getElementById('tableBody');
-  if (!resultData.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">🔍 Aucune ligne ne correspond aux filtres</td></tr>';
-    document.getElementById('cardResult').style.display = 'block';
-    setStep(4);
-    return;
-  }
-
-  var html = '';
-  var max = Math.min(resultData.length, 300);
-  for (var i = 0; i < max; i++) {
-    var r = resultData[i];
-    if (selectedTpl === 'citadel') {
-      html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(r.ref) + '</td><td>' + esc(r.demandeur) + '</td><td>' + esc(r.fournisseur) + '</td><td>' + esc(r.qte) + '</td><td>' + esc(r.affaire) + '</td></tr>';
-    } else if (selectedTpl === 'easybuy') {
-      html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(r.code) + '</td><td>' + esc(r.qte) + '</td><td>' + esc(r.fournisseur) + '</td><td>' + esc(r.demandeur) + '</td><td>' + esc(r.affaire) + '</td><td>#N/A</td></tr>';
-    } else if (selectedTpl === 'sap') {
-      html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(r.article) + '</td><td>' + esc(r.designation) + '</td><td>' + esc(r.famille) + '</td><td>' + esc(r.qte) + '</td><td>' + esc(r.fournisseur) + '</td><td>' + esc(r.demandeur) + '</td><td>' + esc(r.affaire) + '</td></tr>';
-    }
-  }
-  if (resultData.length > 300) html += '<tr class="more-row"><td colspan="8">… ' + (resultData.length - 300) + ' lignes supplémentaires dans le fichier téléchargé</td></tr>';
-  tbody.innerHTML = html;
-
-  document.getElementById('cardResult').style.display = 'block';
+  if (resultData.length>300) html+='<tr class="more-row"><td colspan="8">… '+(resultData.length-300)+' lignes supplémentaires dans le fichier téléchargé</td></tr>';
+  tbody.innerHTML=html;
+  document.getElementById('cardResult').style.display='block';
   setStep(4);
-  setTimeout(function() { document.getElementById('cardResult').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+  setTimeout(function(){document.getElementById('cardResult').scrollIntoView({behavior:'smooth',block:'start'});},100);
 }
 
-function esc(s) {
-  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-// ── EXPORT EXCEL ─────────────────────────────────────────────────
+// EXPORT
 document.getElementById('btnExport').addEventListener('click', function() {
   if (!resultData.length) return;
-  var rows, sheetName, fileName;
-  var date = new Date().toISOString().slice(0, 10);
-
-  if (selectedTpl === 'citadel') {
-    rows = [['Référence (article)', 'Demandeur (SAP)', 'Fournisseur', 'Quantité installée', 'N° affaire']];
-    for (var i = 0; i < resultData.length; i++)
-      rows.push([resultData[i].ref, resultData[i].demandeur, resultData[i].fournisseur, resultData[i].qte, resultData[i].affaire]);
-    sheetName = 'Liste CITADEL';
-    fileName  = 'Liste_CITADEL_' + (fileType || '') + '_' + date + '.xlsx';
-
-  } else if (selectedTpl === 'easybuy') {
-    var hEB = ['Numéro de ligne','Code Article *','Libellé article','Quantité *','PU','Devise',
-      'Commentaire de ligne','Par','Fournisseur Tarif Fabricant Local','Fournisseur',
-      'Numéro de besoin','Demandeur Technique','Type d\'imputation','Numéro d\'affaire',
-      'Numéro d\'immo','Date de livraison','Date de début','Date de fin',
-      '% remise de la ligne','Type d\'adresse','ID adresse de livraison','Demandeur'];
-    rows = [hEB];
-    for (var i = 0; i < resultData.length; i++) {
-      var row = new Array(22).fill('');
-      row[1]  = resultData[i].code;
-      row[3]  = resultData[i].qte;
-      row[9]  = resultData[i].fournisseur;
-      row[11] = resultData[i].demandeur;
-      row[13] = resultData[i].affaire;
-      row[15] = '#N/A';
-      row[20] = '#N/A';
-      rows.push(row);
-    }
-    sheetName = 'Easybuy';
-    fileName  = 'Template_Easybuy_' + (fileType || '') + '_' + date + '.xlsx';
-
-  } else if (selectedTpl === 'sap') {
-    var hSAP = ['Article [material]','Désignation [itemDescription]','Famille d\'achat [purchasingFamily]',
-      'Quantité [quantity]','Unité de mesure [unitOfMesure]','Prix de valorisation [valuationPrice]',
-      'Base de prix [priceUnit]','Magasin [storageLocation]','Fournisseur souhaité [desiredVendor]',
-      'N° article fournisseur [SupplierMaterialNumber]','Demandeur [requisitioner]',
-      'Nº de besoin [trackingNumber]','Catégorie d\'imputation [accountAssignment]','Affaire [project]',
-      'Immobilisation [asset]','Ordre [order]','Date de livraison [deliveryDate]',
-      'Date de début [beginningDate]','Date de fin [endDate]','Texte poste [commentItemText]',
-      'Commentaire interne [commentInternalComment]'];
-    rows = [hSAP];
-    for (var i = 0; i < resultData.length; i++) {
-      var row = new Array(21).fill('');
-      row[0]  = resultData[i].article;
-      row[1]  = resultData[i].designation;
-      row[2]  = resultData[i].famille;
-      row[3]  = resultData[i].qte;
-      row[8]  = resultData[i].fournisseur;
-      row[9]  = resultData[i].artFourn;
-      row[10] = resultData[i].demandeur;
-      row[13] = resultData[i].affaire;
-      row[16] = '#N/A';
-      rows.push(row);
-    }
-    sheetName = 'SAP';
-    fileName  = 'Template_SAP_' + (fileType || '') + '_' + date + '.xlsx';
+  var rows, sheetName, fileName, date=new Date().toISOString().slice(0,10);
+  if (selectedTpl==='citadel'){
+    rows=[['Référence (article)','Demandeur (SAP)','Fournisseur','Quantité installée','N° affaire']];
+    resultData.forEach(function(r){rows.push([r.ref,r.demandeur,r.fournisseur,r.qte,r.affaire]);});
+    sheetName='Liste CITADEL';fileName='Liste_CITADEL_'+date+'.xlsx';
+  } else if (selectedTpl==='easybuy'){
+    var hEB=['Numéro de ligne','Code Article *','Libellé article','Quantité *','PU','Devise','Commentaire de ligne','Par','Fournisseur Tarif Fabricant Local','Fournisseur','Numéro de besoin','Demandeur Technique','Type d\'imputation','Numéro d\'affaire','Numéro d\'immo','Date de livraison','Date de début','Date de fin','% remise de la ligne','Type d\'adresse','ID adresse de livraison','Demandeur'];
+    rows=[hEB];
+    resultData.forEach(function(r){var row=new Array(22).fill('');row[1]=r.code;row[3]=r.qte;row[9]=r.fournisseur;row[11]=r.demandeur;row[13]=r.affaire;row[15]='#N/A';row[20]='#N/A';rows.push(row);});
+    sheetName='Easybuy';fileName='Template_Easybuy_'+date+'.xlsx';
+  } else if (selectedTpl==='sap'){
+    var hSAP=['Article [material]','Désignation [itemDescription]','Famille d\'achat [purchasingFamily]','Quantité [quantity]','Unité de mesure [unitOfMesure]','Prix de valorisation [valuationPrice]','Base de prix [priceUnit]','Magasin [storageLocation]','Fournisseur souhaité [desiredVendor]','N° article fournisseur [SupplierMaterialNumber]','Demandeur [requisitioner]','Nº de besoin [trackingNumber]','Catégorie d\'imputation [accountAssignment]','Affaire [project]','Immobilisation [asset]','Ordre [order]','Date de livraison [deliveryDate]','Date de début [beginningDate]','Date de fin [endDate]','Texte poste [commentItemText]','Commentaire interne [commentInternalComment]'];
+    rows=[hSAP];
+    resultData.forEach(function(r){var row=new Array(21).fill('');row[0]=r.article;row[1]=r.designation;row[2]=r.famille;row[3]=r.qte;row[8]=r.fournisseur;row[9]=r.artFourn;row[10]=r.demandeur;row[13]=r.affaire;row[16]='#N/A';rows.push(row);});
+    sheetName='SAP';fileName='Template_SAP_'+date+'.xlsx';
   }
-
-  var ws  = XLSX.utils.aoa_to_sheet(rows);
-  var wb2 = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb2, ws, sheetName);
-  XLSX.writeFile(wb2, fileName);
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  var wb2=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb2,ws,sheetName);
+  XLSX.writeFile(wb2,fileName);
 });
 
-// ── RESET ─────────────────────────────────────────────────────────
-document.getElementById('btnNewFilter').addEventListener('click', function() {
-  document.getElementById('cardResult').style.display = 'none';
-  setStep(3);
-  document.getElementById('cardFiltres').scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-
-document.getElementById('btnReset').addEventListener('click', function() {
-  wb = null; fileType = null; resultData = [];
-  fileInput.value = '';
-  document.getElementById('fileBanner').style.display  = 'none';
-  document.getElementById('manualType').style.display  = 'none';
-  document.getElementById('cardTemplate').style.display = 'none';
-  document.getElementById('cardFiltres').style.display  = 'none';
-  document.getElementById('cardResult').style.display   = 'none';
-  document.getElementById('btnGenerer').disabled = true;
-  setStep(1);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+document.getElementById('btnNewFilter').addEventListener('click', function(){document.getElementById('cardResult').style.display='none';setStep(3);document.getElementById('cardFiltres').scrollIntoView({behavior:'smooth',block:'start'});});
+document.getElementById('btnReset').addEventListener('click', function(){
+  wb=null;sheetData=[];resultData=[];fileInput.value='';
+  document.getElementById('fileBanner').style.display='none';
+  document.getElementById('cardTemplate').style.display='none';
+  document.getElementById('cardFiltres').style.display='none';
+  document.getElementById('cardResult').style.display='none';
+  document.getElementById('btnGenerer').disabled=true;
+  setStep(1);window.scrollTo({top:0,behavior:'smooth'});
 });
 </script>
 </body>
